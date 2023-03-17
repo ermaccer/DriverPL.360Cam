@@ -14,11 +14,11 @@ static int   pContinueAddress = 0;
 
 void __declspec(naked) LookAroundHook()
 {
-    _asm {
-        movss   dword ptr[ebx + 0x28], xmm0
-    }
-    if (bUnkCameraRelated)
-         *bUnkCameraRelated = true;
+    if (*bIsUsingTankControls)
+        _asm cmp bUnkCameraRelated, 0
+    else 
+        _asm cmp bUnkCameraRelated, 1
+
     _asm      jmp pContinueAddress
 }
 
@@ -32,8 +32,8 @@ void Init()
     int unknownCameraPat = _pat("F3 0F 11 43 28 80 3D ? ? ? ? 00", 7);
     bUnkCameraRelated = (bool*)(*(int*)unknownCameraPat);
 
-    int togglePat = _pat("F3 0F 11 43 28 80 3D ? ? ? ? 00");
-    pContinueAddress = togglePat + 5;
+    int togglePat = _pat("F3 0F 11 43 28 80 3D ? ? ? ? 00", 5);
+    pContinueAddress = togglePat + 7;
 
 
 
